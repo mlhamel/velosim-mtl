@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from enum import Enum
 
 class TransportMode(str, Enum):
@@ -9,6 +9,12 @@ class TransportMode(str, Enum):
     CAR = "car"
     WALK = "walk"
 
+class RouteAnalysis(BaseModel):
+    total_distance_km: float
+    protected_percentage: float = Field(..., description="Percentage of route on protected bike paths (REV, etc.)")
+    elevation_gain_m: float = 0.0
+    estimated_duration_min: float
+
 class CitizenPersona(BaseModel):
     id: str
     name: str
@@ -16,12 +22,13 @@ class CitizenPersona(BaseModel):
     fitness_level: float = Field(..., description="0.0 to 1.0 scale")
     winter_cycling_experience: bool = False
     has_e_bike: bool = False
-    comfort_threshold_temp: float = Field(-10.0, description="Temperature below which they hesitate to bike")
-    comfort_threshold_snow: float = Field(2.0, description="Snow depth in cm above which they hesitate")
-    commute_distance_km: float
     
-    # Memory of recent experiences
-    bad_weather_experience_count: int = 0
+    # Spatial locations (lat, lon)
+    home_coords: Tuple[float, float]
+    work_coords: Tuple[float, float]
+    
+    # Decisions are now influenced by specific route analysis
+    current_route: Optional[RouteAnalysis] = None
 
 class WeatherState(BaseModel):
     temperature: float

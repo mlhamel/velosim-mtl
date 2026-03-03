@@ -5,19 +5,25 @@ import polars as pl
 def run_mini_sim():
     engine = DecisionEngine(model_name="llama3.2")
     
-    # 1. Define Citizens
+    # 1. Define Citizens with Montreal coordinates
     citizens = [
         CitizenPersona(
             id="1", name="Sébastien", age=34, fitness_level=0.8, 
-            winter_cycling_experience=True, commute_distance_km=5.2
+            winter_cycling_experience=True,
+            home_coords=(45.5236, -73.5828), # Plateau
+            work_coords=(45.5017, -73.5673)  # Downtown
         ),
         CitizenPersona(
             id="2", name="Marie-Eve", age=28, fitness_level=0.5, 
-            winter_cycling_experience=False, commute_distance_km=3.5
+            winter_cycling_experience=False,
+            home_coords=(45.5468, -73.5905), # Rosemont
+            work_coords=(45.5236, -73.5828)  # Plateau
         ),
         CitizenPersona(
             id="3", name="Jean-Francois", age=55, fitness_level=0.4, 
-            winter_cycling_experience=False, has_e_bike=True, commute_distance_km=8.0
+            winter_cycling_experience=False, has_e_bike=True,
+            home_coords=(45.5350, -73.6000), # Petite-Patrie
+            work_coords=(45.5260, -73.5950)  # Mile End
         )
     ]
     

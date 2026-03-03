@@ -1,0 +1,83 @@
+from velosim.models import WeatherState, PolicyState
+from velosim.engine import DecisionEngine
+from velosim.router import Router
+from velosim.population import PopulationGenerator
+import polars as pl
+from tqdm import tqdm
+import os
+
+def run_large_sim(pop_size: int = 100):
+    graph_path = "data/montreal_bike_network.graphml"
+    
+    router = Router(graph_path)
+    engine = DecisionEngine(model_name="llama3.2")
+    pop_gen = PopulationGenerator(graph_path)
+    
+    print(f"Generating population of {pop_size} agents...")
+    population = pop_gen.generate(pop_size)
+    
+    # Analyze routes first
+    print("Analyzing routes for each agent...")
+    for c in tqdm(population):
+        c.current_route = router.get_route_analysis(c.home_coords, c.work_coords)
+    
+    # A snowy day
+    weather = WeatherState(
+        temperature=-6.0, 
+        snow_depth_cm=5.0, 
+        is_raining=False, 
+        is_snowing=False, 
+        wind_speed_kmh=15.0
+    )
+    
+    scenarios = [
+        PolicyState(snow_clearing_priority=False),
+        PolicyState(snow_clearing_priority=True)
+    ]
+    
+    results = []
+    
+    for policy in scenarios:
+        policy_label = "Priority" if policy.snow_clearing_priority else "Standard"
+        print(f"\nRunning reasoning for Scenario: {policy_label}")
+        
+        for citizen in tqdm(population):
+            # Distance logic
+            if citizen.current_route.total_distance_km == 0:
+                mode = "metro"
+                reasoning = "No route found."
+            elif citizen.current_route.total_distance_km > 12.0:
+                mode = "car" if citizen.age > 30 else "metro"
+                reasoning = "Distance too long for winter commute."
+            else:
+                try:
+                    decision = engine.decide_commute(citizen, weather, policy)
+                    mode = decision.mode
+                    reasoning = decision.reasoning
+                except Exception as e:
+                    mode = "metro"
+                    reasoning = f"Error: {e}"
+            
+            results.append({
+                "agent_id": citizen.id,
+                "dist_km": citizen.current_route.total_distance_km,
+                "protected_%": citizen.current_route.protected_percentage,
+                "policy": policy_label,
+                "mode": mode,
+                "age": citizen.age
+            })
+            
+    df = pl.DataFrame(results)
+    
+    # Aggregate results
+    summary = df.group_by(["policy", "mode"]).len().sort(["policy", "mode"])
+    print("\n=== Modal Shift Summary (Population: 100) ===")
+    print(summary)
+    
+    # Save results for Phase 4
+    output_path = "data/sim_results.parquet"
+    df.write_parquet(output_path)
+    print(f"\nFull results saved to {output_path}")
+
+if __name__ == "__main__":
+    run_large_sim(100)
