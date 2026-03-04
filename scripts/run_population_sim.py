@@ -2,8 +2,8 @@ from velosim.models import WeatherState, PolicyState
 from velosim.engine import DecisionEngine
 from velosim.router import Router
 from velosim.population import PopulationGenerator
+from velosim.terminal_viz import PopulationDashboard
 import polars as pl
-from tqdm import tqdm
 import os
 
 def run_large_sim(pop_size: int = 100):
@@ -13,13 +13,7 @@ def run_large_sim(pop_size: int = 100):
     engine = DecisionEngine(model_name="llama3.2")
     pop_gen = PopulationGenerator(graph_path)
     
-    print(f"Generating population of {pop_size} agents...")
     population = pop_gen.generate(pop_size)
-    
-    # Analyze routes first
-    print("Analyzing routes for each agent...")
-    for c in tqdm(population):
-        c.current_route = router.get_route_analysis(c.home_coords, c.work_coords)
     
     # A snowy day
     weather = WeatherState(
@@ -30,51 +24,65 @@ def run_large_sim(pop_size: int = 100):
         wind_speed_kmh=15.0
     )
     
-    scenarios = [
-        PolicyState(snow_clearing_priority=False),
-        PolicyState(snow_clearing_priority=True)
-    ]
+    # ── Start live dashboard ─────────────────────────────────────────────
+    dashboard = PopulationDashboard(pop_size=pop_size, weather=weather)
+    dashboard.start()
     
-    results = []
-    
-    for policy in scenarios:
-        policy_label = "Priority" if policy.snow_clearing_priority else "Standard"
-        print(f"\nRunning reasoning for Scenario: {policy_label}")
+    try:
+        # Analyze routes first
+        dashboard.begin_route_analysis()
+        for c in population:
+            c.current_route = router.get_route_analysis(c.home_coords, c.work_coords)
+            dashboard.advance_route()
         
-        for citizen in tqdm(population):
-            # Distance logic
-            if citizen.current_route.total_distance_km == 0:
-                mode = "metro"
-                reasoning = "No route found."
-            elif citizen.current_route.total_distance_km > 12.0:
-                mode = "car" if citizen.age > 30 else "metro"
-                reasoning = "Distance too long for winter commute."
-            else:
-                try:
-                    decision = engine.decide_commute(citizen, weather, policy)
-                    mode = decision.mode
-                    reasoning = decision.reasoning
-                except Exception as e:
+        scenarios = [
+            PolicyState(snow_clearing_priority=False),
+            PolicyState(snow_clearing_priority=True)
+        ]
+        
+        results = []
+        
+        for policy in scenarios:
+            policy_label = "Priority" if policy.snow_clearing_priority else "Standard"
+            dashboard.begin_scenario(policy, policy_label)
+            
+            for citizen in population:
+                # Distance logic
+                if citizen.current_route.total_distance_km == 0:
                     mode = "metro"
-                    reasoning = f"Error: {e}"
-            
-            results.append({
-                "agent_id": citizen.id,
-                "dist_km": citizen.current_route.total_distance_km,
-                "protected_%": citizen.current_route.protected_percentage,
-                "policy": policy_label,
-                "mode": mode,
-                "age": citizen.age
-            })
-            
+                    reasoning = "No route found."
+                elif citizen.current_route.total_distance_km > 12.0:
+                    mode = "car" if citizen.age > 30 else "metro"
+                    reasoning = "Distance too long for winter commute."
+                else:
+                    try:
+                        decision = engine.decide_commute(citizen, weather, policy)
+                        mode = decision.mode
+                        reasoning = decision.reasoning
+                    except Exception as e:
+                        mode = "metro"
+                        reasoning = f"Error: {e}"
+                
+                dashboard.record_decision(mode)
+                
+                results.append({
+                    "agent_id": citizen.id,
+                    "dist_km": citizen.current_route.total_distance_km,
+                    "protected_%": citizen.current_route.protected_percentage,
+                    "policy": policy_label,
+                    "mode": mode,
+                    "age": citizen.age
+                })
+    finally:
+        dashboard.stop()
+    
+    # ── Final summary (printed after dashboard closes) ───────────────────
     df = pl.DataFrame(results)
     
-    # Aggregate results
     summary = df.group_by(["policy", "mode"]).len().sort(["policy", "mode"])
-    print("\n=== Modal Shift Summary (Population: 100) ===")
+    print(f"\n=== Modal Shift Summary (Population: {pop_size}) ===")
     print(summary)
     
-    # Save results for Phase 4
     output_path = "data/sim_results.parquet"
     df.write_parquet(output_path)
     print(f"\nFull results saved to {output_path}")
