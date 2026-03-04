@@ -9,7 +9,7 @@ WHITE := \033[37m
 BOLD := \033[1m
 RESET := \033[0m
 
-.PHONY: help setup sync fetch-data run-prototype run-spatial run-population run-temporal pull-model clean test lint check install dev-install visualize visualize-temporal visualize-heatmap visualize-map
+.PHONY: help setup sync fetch-data run-prototype run-spatial run-population run-temporal pull-model clean test lint check install dev-install visualize visualize-temporal visualize-heatmap visualize-map generate-report
 
 # Default target: show help
 help:
@@ -34,6 +34,7 @@ help:
 	@echo "  $(CYAN)visualize-temporal$(RESET) - Generate charts from weekly simulation results"
 	@echo "  $(CYAN)visualize-heatmap$(RESET) - Generate spatial demand heatmap"
 	@echo "  $(CYAN)visualize-map$(RESET)     - Generate interactive Folium HTML map"
+	@echo "  $(CYAN)generate-report$(RESET)   - Generate Markdown post-simulation report"
 	@echo ""
 	@echo "$(BOLD)$(RED)🔧 DEVELOPMENT COMMANDS:$(RESET)"
 	@echo "  $(CYAN)test$(RESET)             - Run all tests using pytest"
@@ -139,6 +140,12 @@ visualize-map:
 	@echo "$(BOLD)$(MAGENTA)🗺️  Generating interactive Folium map...$(RESET)"
 	uv run scripts/visualize_map.py
 	@echo "$(MAGENTA)✅ Interactive map generated!$(RESET)"
+
+# Generate post-simulation Markdown report
+generate-report:
+	@echo "$(BOLD)$(MAGENTA)📝 Generating post-simulation report...$(RESET)"
+	uv run scripts/generate_report.py
+	@echo "$(MAGENTA)✅ Simulation report generated!$(RESET)"
 
 # ============================================================================
 # 🔧 DEVELOPMENT COMMANDS

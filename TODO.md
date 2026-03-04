@@ -23,10 +23,10 @@
 - [x] **Spatial Demand Heatmaps:** Map exact route segments to see which streets are most "demanded" by agents.
 - [x] **Interactive Folium Map:** HTML map showing agent home/work clusters and chosen routes.
 
-## ⚪ Phase 5: Temporal Simulation (Upcoming)
-- [ ] **Weather Time-Series:** Simulate a full winter week (e.g., storm day followed by clearing days).
-- [ ] **Agent Memory/Fatigue:** Cumulative "bad days" influencing long-term modal shift.
-- [ ] **Post-Simulation Report:** Generate a Markdown summary of policy effectiveness.
+## 🟢 Phase 5: Temporal Simulation (Completed)
+- [x] **Weather Time-Series:** Simulate a full winter week (e.g., storm day followed by clearing days).
+- [x] **Agent Memory/Fatigue:** Cumulative "bad days" influencing long-term modal shift.
+- [x] **Post-Simulation Report:** Generate a Markdown summary of policy effectiveness.
 
 ## ⚪ Long-term Ideas
 - [ ] **Eco-Counter Validation:** Compare simulated demand with real Montreal bike counter data.
