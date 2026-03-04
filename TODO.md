@@ -12,17 +12,22 @@
 - [x] Resilient tag-checking for infrastructure analysis (REV detection).
 - [x] Route-aware reasoning in Ollama.
 
-## 🟡 Phase 3: Population & Scale (Current)
+## 🟢 Phase 3: Population & Scale (Completed)
 - [x] **Population Generator:** Create 100+ diverse agents based on spatial sampling.
-- [ ] **Batch Decision Engine:** Optimize Ollama calls for larger populations.
-- [ ] **Aggregate Analysis:** Compare modal shifts across policy scenarios.
+- [x] **Batch Decision Engine:** Run 200+ reasoning calls via Ollama.
+- [x] **Data Persistence:** Save results to Parquet for analysis.
 
-## ⚪ Phase 4: Visualization & Reporting
-- [ ] **Demand Heatmaps:** Map route usage intensity.
-- [ ] **Policy Dashboard:** Charts showing modal shift percentages.
-- [ ] **Folium Maps:** Interactive HTML maps of simulated routes.
+## 🟡 Phase 4: Visualization & Reporting (Current)
+- [x] **Policy Comparison Charts:** Bar charts showing modal shift (Standard vs. Priority).
+- [x] **Infrastructure Correlation:** Boxplots linking route protection % to biking decisions.
+- [ ] **Spatial Demand Heatmaps:** Map exact route segments to see which streets are most "demanded" by agents.
+- [ ] **Interactive Folium Map:** HTML map showing agent home/work clusters and chosen routes.
 
-## ⚪ Phase 5: Temporal Simulation
-- [ ] **Weather Time-Series:** Simulate a full winter week.
-- [ ] **Agent Memory:** Cumulative fatigue/experience influencing decisions.
-- [ ] **Feedback Loops:** High traffic density impacting route attractiveness.
+## ⚪ Phase 5: Temporal Simulation (Upcoming)
+- [ ] **Weather Time-Series:** Simulate a full winter week (e.g., storm day followed by clearing days).
+- [ ] **Agent Memory/Fatigue:** Cumulative "bad days" influencing long-term modal shift.
+- [ ] **Post-Simulation Report:** Generate a Markdown summary of policy effectiveness.
+
+## ⚪ Long-term Ideas
+- [ ] **Eco-Counter Validation:** Compare simulated demand with real Montreal bike counter data.
+- [ ] **Multi-Model Comparison:** Test if different LLMs (Mistral vs. Llama) "perceive" winter safety differently.

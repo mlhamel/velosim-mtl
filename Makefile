@@ -10,7 +10,9 @@ help:
 	@echo "  run-prototype    - Run the reasoning simulation prototype"
 	@echo "  run-spatial      - Run the spatial routing simulation"
 	@echo "  run-population   - Run large-scale population simulation"
+	@echo "  run-temporal     - Run 5-day weather/policy simulation"
 	@echo "  visualize        - Generate charts from simulation results"
+	@echo "  visualize-temporal - Generate charts from weekly simulation results"
 	@echo "  test             - Run all tests using pytest"
 	@echo "  lint             - Run code linting (if available)"
 	@echo "  check            - Run syntax check on all Python files"
@@ -48,9 +50,17 @@ run-spatial:
 run-population:
 	uv run scripts/run_population_sim.py
 
+# Run temporal simulation
+run-temporal:
+	uv run scripts/run_temporal_sim.py
+
 # Generate visualizations
 visualize:
 	uv run scripts/visualize_results.py
+
+# Generate temporal visualizations
+visualize-temporal:
+	uv run scripts/visualize_temporal.py
 
 # Install dependencies
 install:
