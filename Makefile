@@ -1,101 +1,168 @@
-.PHONY: help setup sync fetch-data run-prototype run-spatial pull-model clean test lint check install dev-install
+# Colors for terminal output
+RED := \033[31m
+GREEN := \033[32m
+YELLOW := \033[33m
+BLUE := \033[34m
+MAGENTA := \033[35m
+CYAN := \033[36m
+WHITE := \033[37m
+BOLD := \033[1m
+RESET := \033[0m
+
+.PHONY: help setup sync fetch-data run-prototype run-spatial run-population run-temporal pull-model clean test lint check install dev-install visualize visualize-temporal
 
 # Default target: show help
 help:
-	@echo "VeloSim-MTL Management Commands:"
-	@echo "  setup            - Complete setup (pull model, sync deps, fetch map data)"
-	@echo "  pull-model       - Pull the required LLM model (llama3.2) via Ollama"
-	@echo "  sync             - Sync Python dependencies using uv"
-	@echo "  fetch-data       - Fetch Montreal cycling network data from OSM"
-	@echo "  run-prototype    - Run the reasoning simulation prototype"
-	@echo "  run-spatial      - Run the spatial routing simulation"
-	@echo "  run-population   - Run large-scale population simulation"
-	@echo "  run-temporal     - Run 5-day weather/policy simulation"
-	@echo "  visualize        - Generate charts from simulation results"
-	@echo "  visualize-temporal - Generate charts from weekly simulation results"
-	@echo "  test             - Run all tests using pytest"
-	@echo "  lint             - Run code linting (if available)"
-	@echo "  check            - Run syntax check on all Python files"
-	@echo "  install          - Install project dependencies"
-	@echo "  dev-install      - Install project with dev dependencies"
-	@echo "  clean            - Remove data and cache files"
+	@echo "$(BOLD)$(BLUE)🚴 VeloSim-MTL - Montreal Cycling Simulation$(RESET)"
+	@echo ""
+	@echo "$(BOLD)$(GREEN)📋 SETUP COMMANDS:$(RESET)"
+	@echo "  $(CYAN)setup$(RESET)            - Complete setup (pull model, sync deps, fetch map data)"
+	@echo "  $(CYAN)install$(RESET)          - Install project dependencies"
+	@echo "  $(CYAN)dev-install$(RESET)      - Install project with dev dependencies"
+	@echo "  $(CYAN)pull-model$(RESET)       - Pull the required LLM model (llama3.2) via Ollama"
+	@echo "  $(CYAN)sync$(RESET)             - Sync Python dependencies using uv"
+	@echo "  $(CYAN)fetch-data$(RESET)       - Fetch Montreal cycling network data from OSM"
+	@echo ""
+	@echo "$(BOLD)$(YELLOW)🧪 SIMULATION COMMANDS:$(RESET)"
+	@echo "  $(CYAN)run-prototype$(RESET)    - Run the reasoning simulation prototype"
+	@echo "  $(CYAN)run-spatial$(RESET)      - Run the spatial routing simulation"
+	@echo "  $(CYAN)run-population$(RESET)   - Run large-scale population simulation"
+	@echo "  $(CYAN)run-temporal$(RESET)     - Run 5-day weather/policy simulation"
+	@echo ""
+	@echo "$(BOLD)$(MAGENTA)📊 VISUALIZATION COMMANDS:$(RESET)"
+	@echo "  $(CYAN)visualize$(RESET)        - Generate charts from simulation results"
+	@echo "  $(CYAN)visualize-temporal$(RESET) - Generate charts from weekly simulation results"
+	@echo ""
+	@echo "$(BOLD)$(RED)🔧 DEVELOPMENT COMMANDS:$(RESET)"
+	@echo "  $(CYAN)test$(RESET)             - Run all tests using pytest"
+	@echo "  $(CYAN)lint$(RESET)             - Run code linting (if available)"
+	@echo "  $(CYAN)check$(RESET)            - Run syntax check on all Python files"
+	@echo "  $(CYAN)clean$(RESET)            - Remove data and cache files"
+	@echo ""
+
+# ============================================================================
+# 📋 SETUP COMMANDS
+# ============================================================================
 
 # Full setup
 setup: pull-model sync fetch-data
-
-# Pull the Ollama model
-pull-model:
-	@if ! command -v ollama > /dev/null; then \
-		echo "Error: 'ollama' command not found."; \
-		echo "Please install Ollama first: curl -fsSL https://ollama.com/install.sh | sh"; \
-		exit 1; \
-	fi
-	ollama pull llama3.2
-
-# Sync dependencies
-sync:
-	uv sync
-
-# Fetch OSM data
-fetch-data:
-	uv run scripts/fetch_data.py
-
-# Run prototype
-run-prototype:
-	uv run scripts/run_prototype.py
-
-run-spatial:
-	uv run scripts/run_spatial_prototype.py
-
-run-population:
-	uv run scripts/run_population_sim.py
-
-# Run temporal simulation
-run-temporal:
-	uv run scripts/run_temporal_sim.py
-
-# Generate visualizations
-visualize:
-	uv run scripts/visualize_results.py
-
-# Generate temporal visualizations
-visualize-temporal:
-	uv run scripts/visualize_temporal.py
+	@echo "$(BOLD)$(GREEN)✅ Setup complete!$(RESET)"
 
 # Install dependencies
 install:
+	@echo "$(BOLD)$(GREEN)📦 Installing dependencies...$(RESET)"
 	uv sync
+	@echo "$(GREEN)✅ Dependencies installed!$(RESET)"
 
 # Install with dev dependencies
 dev-install:
+	@echo "$(BOLD)$(GREEN)📦 Installing with dev dependencies...$(RESET)"
 	uv sync --group dev
+	@echo "$(GREEN)✅ Dev dependencies installed!$(RESET)"
+
+# Pull the Ollama model
+pull-model:
+	@echo "$(BOLD)$(GREEN)🤖 Checking Ollama installation...$(RESET)"
+	@if ! command -v ollama > /dev/null; then \
+		echo "$(RED)❌ Error: 'ollama' command not found.$(RESET)"; \
+		echo "$(YELLOW)Please install Ollama first: curl -fsSL https://ollama.com/install.sh | sh$(RESET)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)🔄 Pulling llama3.2 model...$(RESET)"
+	ollama pull llama3.2
+	@echo "$(GREEN)✅ Model pulled successfully!$(RESET)"
+
+# Sync dependencies
+sync:
+	@echo "$(BOLD)$(GREEN)🔄 Syncing dependencies...$(RESET)"
+	uv sync
+	@echo "$(GREEN)✅ Dependencies synced!$(RESET)"
+
+# Fetch OSM data
+fetch-data:
+	@echo "$(BOLD)$(GREEN)🗺️  Fetching Montreal cycling network data...$(RESET)"
+	uv run scripts/fetch_data.py
+	@echo "$(GREEN)✅ Data fetched successfully!$(RESET)"
+
+# ============================================================================
+# 🧪 SIMULATION COMMANDS
+# ============================================================================
+
+# Run prototype
+run-prototype:
+	@echo "$(BOLD)$(YELLOW)🧪 Running reasoning simulation prototype...$(RESET)"
+	uv run scripts/run_prototype.py
+	@echo "$(GREEN)✅ Prototype simulation completed!$(RESET)"
+
+run-spatial:
+	@echo "$(BOLD)$(YELLOW)🗺️  Running spatial routing simulation...$(RESET)"
+	uv run scripts/run_spatial_prototype.py
+	@echo "$(GREEN)✅ Spatial simulation completed!$(RESET)"
+
+run-population:
+	@echo "$(BOLD)$(YELLOW)👥 Running large-scale population simulation...$(RESET)"
+	uv run scripts/run_population_sim.py
+	@echo "$(GREEN)✅ Population simulation completed!$(RESET)"
+
+# Run temporal simulation
+run-temporal:
+	@echo "$(BOLD)$(YELLOW)🗓️  Running 5-day temporal simulation...$(RESET)"
+	uv run scripts/run_temporal_sim.py
+	@echo "$(GREEN)✅ Temporal simulation completed!$(RESET)"
+
+# ============================================================================
+# 📊 VISUALIZATION COMMANDS
+# ============================================================================
+
+# Generate visualizations
+visualize:
+	@echo "$(BOLD)$(MAGENTA)📊 Generating charts from simulation results...$(RESET)"
+	uv run scripts/visualize_results.py
+	@echo "$(MAGENTA)✅ Visualization charts generated!$(RESET)"
+
+# Generate temporal visualizations
+visualize-temporal:
+	@echo "$(BOLD)$(MAGENTA)📊 Generating temporal charts...$(RESET)"
+	uv run scripts/visualize_temporal.py
+	@echo "$(MAGENTA)✅ Temporal visualization charts generated!$(RESET)"
+
+# ============================================================================
+# 🔧 DEVELOPMENT COMMANDS
+# ============================================================================
 
 # Run tests
 test:
+	@echo "$(BOLD)$(RED)🧪 Running tests...$(RESET)"
 	@if [ -d "tests" ]; then \
 		uv run pytest; \
+		echo "$(GREEN)✅ Tests completed!$(RESET)"; \
 	else \
-		echo "No tests directory found. Create tests/ directory and add test files."; \
+		echo "$(YELLOW)⚠️  No tests directory found. Create tests/ directory and add test files.$(RESET)"; \
 	fi
 
 # Syntax check all Python files
 check:
-	@echo "Checking Python syntax..."
+	@echo "$(BOLD)$(RED)🔍 Checking Python syntax...$(RESET)"
 	@find . -name "*.py" -not -path "./.venv/*" -exec python -m py_compile {} \;
-	@echo "✓ All Python files have valid syntax"
+	@echo "$(GREEN)✅ All Python files have valid syntax$(RESET)"
 
 # Run linting (if ruff or flake8 is available)
 lint:
+	@echo "$(BOLD)$(RED)🧩 Running code linter...$(RESET)"
 	@if command -v ruff > /dev/null; then \
-		echo "Running ruff linter..."; \
+		echo "$(CYAN)Using ruff linter...$(RESET)"; \
 		uv run ruff check .; \
+		echo "$(GREEN)✅ Linting completed!$(RESET)"; \
 	elif command -v flake8 > /dev/null; then \
-		echo "Running flake8 linter..."; \
+		echo "$(CYAN)Using flake8 linter...$(RESET)"; \
 		uv run flake8 .; \
+		echo "$(GREEN)✅ Linting completed!$(RESET)"; \
 	else \
-		echo "No linter found. Install ruff or flake8 for code linting."; \
+		echo "$(YELLOW)⚠️  No linter found. Install ruff or flake8 for code linting.$(RESET)"; \
 	fi
 
 # Cleanup
 clean:
+	@echo "$(BOLD)$(RED)🧹 Cleaning up data files...$(RESET)"
 	rm -rf data/*.graphml data/*.gpkg
+	@echo "$(GREEN)✅ Cleanup completed!$(RESET)"
