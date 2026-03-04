@@ -67,6 +67,10 @@ def run_large_sim(pop_size: int = 100):
                 
                 results.append({
                     "agent_id": citizen.id,
+                    "home_lat": citizen.home_coords[0],
+                    "home_lon": citizen.home_coords[1],
+                    "work_lat": citizen.work_coords[0],
+                    "work_lon": citizen.work_coords[1],
                     "dist_km": citizen.current_route.total_distance_km,
                     "protected_%": citizen.current_route.protected_percentage,
                     "policy": policy_label,

@@ -9,7 +9,7 @@ WHITE := \033[37m
 BOLD := \033[1m
 RESET := \033[0m
 
-.PHONY: help setup sync fetch-data run-prototype run-spatial run-population run-temporal pull-model clean test lint check install dev-install visualize visualize-temporal
+.PHONY: help setup sync fetch-data run-prototype run-spatial run-population run-temporal pull-model clean test lint check install dev-install visualize visualize-temporal visualize-heatmap visualize-map
 
 # Default target: show help
 help:
@@ -32,6 +32,8 @@ help:
 	@echo "$(BOLD)$(MAGENTA)📊 VISUALIZATION COMMANDS:$(RESET)"
 	@echo "  $(CYAN)visualize$(RESET)        - Generate charts from simulation results"
 	@echo "  $(CYAN)visualize-temporal$(RESET) - Generate charts from weekly simulation results"
+	@echo "  $(CYAN)visualize-heatmap$(RESET) - Generate spatial demand heatmap"
+	@echo "  $(CYAN)visualize-map$(RESET)     - Generate interactive Folium HTML map"
 	@echo ""
 	@echo "$(BOLD)$(RED)🔧 DEVELOPMENT COMMANDS:$(RESET)"
 	@echo "  $(CYAN)test$(RESET)             - Run all tests using pytest"
@@ -125,6 +127,18 @@ visualize-temporal:
 	@echo "$(BOLD)$(MAGENTA)📊 Generating temporal charts...$(RESET)"
 	uv run scripts/visualize_temporal.py
 	@echo "$(MAGENTA)✅ Temporal visualization charts generated!$(RESET)"
+
+# Generate spatial demand heatmap
+visualize-heatmap:
+	@echo "$(BOLD)$(MAGENTA)🗺️  Generating spatial demand heatmap...$(RESET)"
+	uv run scripts/visualize_heatmap.py
+	@echo "$(MAGENTA)✅ Demand heatmap generated!$(RESET)"
+
+# Generate interactive Folium map
+visualize-map:
+	@echo "$(BOLD)$(MAGENTA)🗺️  Generating interactive Folium map...$(RESET)"
+	uv run scripts/visualize_map.py
+	@echo "$(MAGENTA)✅ Interactive map generated!$(RESET)"
 
 # ============================================================================
 # 🔧 DEVELOPMENT COMMANDS
