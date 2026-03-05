@@ -90,4 +90,5 @@ def run_temporal_sim(pop_size: int = 10):
     print(f"\nResults saved to {output_path}")
 
 if __name__ == "__main__":
-    run_temporal_sim(10)
+    pop_size = int(os.environ.get("VELOSIM_POP_SIZE", 10))
+    run_temporal_sim(pop_size)

@@ -54,4 +54,4 @@ class PolicyState(BaseModel):
 class CommuteDecision(BaseModel):
     mode: TransportMode
     reasoning: str
-    confidence: float
+    confidence: float = 0.5

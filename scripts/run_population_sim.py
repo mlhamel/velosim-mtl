@@ -92,4 +92,5 @@ def run_large_sim(pop_size: int = 100):
     print(f"\nFull results saved to {output_path}")
 
 if __name__ == "__main__":
-    run_large_sim(100)
+    pop_size = int(os.environ.get("VELOSIM_POP_SIZE", 100))
+    run_large_sim(pop_size)
